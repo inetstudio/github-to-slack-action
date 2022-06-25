@@ -1,0 +1,48 @@
+name: 'github-deployment-notifications-to-slack'
+description: 'Send formatted (Bitbucket style) Github deployment notifications to a Slack channel'
+author: 'Max Rakhmankin'
+inputs:
+  channel-id: # channel id to post message when using bot token
+    description: 'Slack channel ID where message will be posted'
+    required: true
+  bot-token: # bot token to authorize operation
+    description: 'Slack App Token from the OAuth & Permissions page'
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Get short SHA & formatted commit
+      id: short
+      run: |
+        export commit_header=$(echo "${{ github.event.pull_request.title || github.event.head_commit.message }}" | sed 's/\n/\\n/g')
+        echo "::set-output name=sha7::$(echo ${{ github.sha }} | cut -c1-7)"
+        echo "::set-output name=commit_header::$commit_header"
+      shell: bash
+    - name: Post notification to a Slack channel
+      uses: slackapi/slack-github-action@v1.16.0
+      with:
+        channel-id: "${{ inputs.channel-id }}"
+        payload: |
+          {
+            "attachments": [
+               {
+                 "mrkdwn_in": ["text", "pretext"],
+                 "color": "${{ env.SLACK_COLOR }}",
+                 "pretext": "${{ env.SLACK_ICON }} Deployment to *${{ github.ref_name }}* _${{ env.JOBS_STATUS }}_. (<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|${{ github.workflow }} #${{ github.run_number }}>)",
+                 "author_name": "${{ env.COMMIT_USER }}",
+                 "author_link": "${{ github.event.sender.html_url }}",
+                 "author_icon": "${{ github.event.sender.avatar_url }}",
+                 "text": "`<${{ env.COMMIT_URL }}|${{ env.SHA7 }}>` ${{ steps.short.outputs.commit_header }}",
+                 "footer": "${{ github.event.repository.name }}",
+                 "footer_icon": "https://platform.slack-edge.com/img/default_application_icon.png"
+               }
+            ]
+          }
+      env:
+        SLACK_BOT_TOKEN: ${{ inputs.bot-token }}
+        SLACK_COLOR: ${{ contains(needs.*.result, 'failure') && 'danger' || 'good' }}
+        SLACK_ICON: ${{ contains(needs.*.result, 'failure') && ':no_entry:' || ':white_check_mark:' }}
+        COMMIT_URL: ${{ github.event.pull_request.html_url || github.event.head_commit.url }}
+        COMMIT_USER: ${{ github.event.pull_request.user.login || github.event.head_commit.author.name }}
+        JOBS_STATUS: ${{ contains(needs.*.result, 'failure') && 'failed' || 'successful' }}
+        SHA7: ${{ steps.short.outputs.sha7 }}
