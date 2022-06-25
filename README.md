@@ -1,6 +1,5 @@
 # GitHub Action Workflow Results to Slack
 
----
 ### Send data into Slack using this [GitHub Action](https://github.com/features/actions) and Slack App!
 
 ![image info](/images/template.png)
@@ -26,6 +25,4 @@ Add this Action as a [step](https://docs.github.com/en/actions/learn-github-acti
 ```
 
 ## License
-
----
 The scripts and documentation in this project are released under the [MIT License](https://github.com/inetstudio/github-to-slack-action/blob/master/LICENSE)
