@@ -40,9 +40,9 @@ runs:
           }
       env:
         SLACK_BOT_TOKEN: ${{ inputs.bot-token }}
-        SLACK_COLOR: ${{ env.FAILED_RUN == 'false && 'danger' || 'good' }}
-        SLACK_ICON: ${{ env.FAILED_RUN == 'false && ':no_entry:' || ':white_check_mark:' }}
+        SLACK_COLOR: ${{ env.FAILED_RUN == 'false' && 'danger' || 'good' }}
+        SLACK_ICON: ${{ env.FAILED_RUN == 'false' && ':no_entry:' || ':white_check_mark:' }}
         COMMIT_URL: ${{ github.event.pull_request.html_url || github.event.head_commit.url }}
         COMMIT_USER: ${{ github.event.pull_request.user.login || github.event.head_commit.author.name }}
-        JOBS_STATUS: ${{ env.FAILED_RUN == 'false && 'failed' || 'successful' }}
+        JOBS_STATUS: ${{ env.FAILED_RUN == 'false' && 'failed' || 'successful' }}
         SHA7: ${{ steps.short.outputs.sha7 }}
