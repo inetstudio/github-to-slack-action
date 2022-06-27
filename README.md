@@ -22,7 +22,13 @@ Add this Action as a [step](https://docs.github.com/en/actions/learn-github-acti
     channel-id: 'CHANNEL_ID'
     # Secret App token from OAuth & Permissions page
     bot-token: 'BOT_TOKEN'
+  env:
+    FAILED_RUN: ${{ contains(needs.*.result, 'failure') }}
 ```
+
+> ❗️ You need to
+> fill [`needs:`](https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idneeds)
+> in this step, action will get a workflow status from selected steps.
 
 ## License
 The scripts and documentation in this project are released under the [MIT License](https://github.com/inetstudio/github-to-slack-action/blob/master/LICENSE)
