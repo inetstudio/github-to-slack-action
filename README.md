@@ -16,7 +16,7 @@ Add this Action as a [step](https://docs.github.com/en/actions/learn-github-acti
 ```yaml
 - name: Workflow notification to a Slack channel
   id: wf-to-slack
-  uses: inetstudio/github-to-slack-action@v1.0
+  uses: inetstudio/github-to-slack-action@v1.4.1
   with:
     # Slack channel id, channel name, or user id to post message.
     channel-id: 'CHANNEL_ID'
