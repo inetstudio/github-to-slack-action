@@ -15,11 +15,11 @@ runs:
       id: short
       run: |
         export commit_header=$(echo "${{ github.event.pull_request.title || github.event.head_commit.message }}" | sed 's/\n/\\n/g')
-        echo "::set-output name=sha7::$(echo ${{ github.sha }} | cut -c1-7)"
-        echo "::set-output name=commit_header::$commit_header"
+        echo "sha7=$(echo ${{ github.sha }} | cut -c1-7)" >> $GITHUB_OUTPUT
+        echo "commit_header=$commit_header" >> $GITHUB_OUTPUT
       shell: bash
     - name: Post notification to a Slack channel
-      uses: slackapi/slack-github-action@v1.16.0
+      uses: slackapi/slack-github-action@v1.23.0
       with:
         channel-id: "${{ inputs.channel-id }}"
         payload: |
@@ -33,6 +33,7 @@ runs:
                  "author_link": "${{ github.event.sender.html_url }}",
                  "author_icon": "${{ github.event.sender.avatar_url }}",
                  "text": "`<${{ env.COMMIT_URL }}|${{ env.SHA7 }}>` ${{ steps.short.outputs.commit_header }}",
+                 "fallback": "`<${{ env.COMMIT_URL }}|${{ env.SHA7 }}>` ${{ steps.short.outputs.commit_header }}",
                  "footer": "${{ github.event.repository.name }}",
                  "footer_icon": "https://platform.slack-edge.com/img/default_application_icon.png"
                }
